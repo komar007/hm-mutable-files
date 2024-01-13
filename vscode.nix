@@ -26,7 +26,7 @@ let
   pathsToMakeWritable = lib.flatten [
     (lib.optional (cfg.userTasks != { }) tasksFilePath)
     (lib.optional (cfg.userSettings != { }) configFilePath)
-    (lib.optional (cfg.keybindings != { }) keybindingsFilePath)
+    (lib.optional (cfg.keybindings != [ ]) keybindingsFilePath)
     (lib.optional (cfg.globalSnippets != { })
       "${snippetDir}/global.code-snippets")
     (lib.mapAttrsToList (language: _: "${snippetDir}/${language}.json")
