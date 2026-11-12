@@ -60,7 +60,7 @@ in
         description = "Enable hm-mutable-diff tool";
       };
     }
-    # Add `mutated` option to home file submodules
+    # Add `mutable` option to supported APIs
     // augmentedWithOption;
 
   # An activation script that replaces nix-store links with mutable files
