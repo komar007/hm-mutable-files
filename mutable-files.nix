@@ -15,6 +15,11 @@ let
       "dataFile"
     ]
   ];
+
+  allFiles = builtins.concatLists (
+    map (attrPath: builtins.attrValues (lib.getAttrFromPath attrPath config)) fileOptionAttrPaths
+  );
+  mutableFiles = builtins.filter (file: file.mutable or false) allFiles;
 in
 {
   options =
@@ -46,11 +51,6 @@ in
 
   config.home.activation.mutableFileGeneration =
     let
-      allFiles = builtins.concatLists (
-        map (attrPath: builtins.attrValues (lib.getAttrFromPath attrPath config)) fileOptionAttrPaths
-      );
-      filterMutableFiles = builtins.filter (file: file.mutable or false);
-      mutableFiles = filterMutableFiles allFiles;
       toCommand =
         file:
         let
@@ -67,4 +67,7 @@ in
       + lib.concatLines (map toCommand mutableFiles);
     in
     lib.hm.dag.entryAfter [ "linkGeneration" ] command;
+  config.xdg.configFile."hm-mutable-files/files".text = lib.concatLines (
+    lib.unique (map (f: f.target) mutableFiles)
+  );
 }
