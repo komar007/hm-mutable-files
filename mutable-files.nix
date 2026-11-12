@@ -24,7 +24,7 @@ let
   ];
 
   allFiles = builtins.attrValues (lib.getAttrFromPath fileDefinitionPath config);
-  mutableFiles = builtins.filter (file: file.mutable or false) allFiles;
+  mutableFiles = builtins.filter (file: file.enable && file.mutable) allFiles;
 in
 {
   options =
