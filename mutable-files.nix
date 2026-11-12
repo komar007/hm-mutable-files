@@ -49,11 +49,7 @@ in
       allFiles = builtins.concatLists (
         map (attrPath: builtins.attrValues (lib.getAttrFromPath attrPath config)) fileOptionAttrPaths
       );
-      filterMutableFiles = builtins.filter (
-        file:
-        (file.mutable or false)
-        && lib.assertMsg file.force "if you specify `mutable` to `true` on a file, you must also set `force` to `true`"
-      );
+      filterMutableFiles = builtins.filter (file: file.mutable or false);
       mutableFiles = filterMutableFiles allFiles;
       toCommand =
         file:
