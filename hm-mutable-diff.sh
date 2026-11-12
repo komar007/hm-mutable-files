@@ -12,7 +12,7 @@ usage() {
 	echo
 	echo "Show mutations with respect to given HM flake"
 	echo "-- how mutations differ from a generation to be activated?"
-	echo -e "\t$0 [--base-flake [flake-uri]]"
+	echo -e "\t$0 --base-flake [flake-uri]"
 	echo "(if flake-uri is missing, the HM default is used)"
 }
 if [ "${1:-}" == "--help" ]; then
