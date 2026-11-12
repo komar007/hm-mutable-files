@@ -1,5 +1,7 @@
 # hm-mutable-files
 
+[![AI:R READ](https://img.shields.io/badge/AI-READ-grey?style=flat&logoSize=auto&labelColor=13171f)](https://0rwx.com)
+
 A Home Manager module that makes selected `home.file`, `xdg.configFile` and `xdg.dataFile` entries
 *mutable*. Normally these are symlinked into the home directory, pointing at read-only Nix store
 paths. A mutable file is copied instead of symlinked, so programs can modify it in place.
