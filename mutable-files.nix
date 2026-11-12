@@ -47,13 +47,24 @@ in
           };
         }
       );
+      mutatedOptionAugmented = mergeAttrsList (
+        map (
+          attrPath: lib.setAttrByPath attrPath (lib.mkOption { type = fileAttrsType; })
+        ) fileOptionAttrPaths
+      );
     in
-    mergeAttrsList (
-      map (
-        attrPath: lib.setAttrByPath attrPath (lib.mkOption { type = fileAttrsType; })
-      ) fileOptionAttrPaths
-    );
+    {
+      # hm-mutable-diff tool toggle
+      mutableFiles.enableMutableDiff = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable hm-mutable-diff tool";
+      };
+    }
+    # Add `mutated` option to home file submodules
+    // mutatedOptionAugmented;
 
+  # An activation script that replaces nix-store links with mutable files
   config.home.activation.mutableFileGeneration =
     let
       toCommand =
@@ -73,12 +84,14 @@ in
     in
     lib.hm.dag.entryAfter [ "linkGeneration" ] command;
 
+  # A list of mutable files
   config.xdg.configFile."hm-mutable-files/files".text = lib.concatLines (
     lib.unique (map (f: f.target) mutableFiles)
   );
 
-  config.home.packages = [
-    (pkgs.writeShellApplication {
+  # A diff tool that shows what has been mutated
+  config.home.packages = lib.optional config.mutableFiles.enableMutableDiff (
+    pkgs.writeShellApplication {
       name = "hm-mutable-diff";
       runtimeInputs = with pkgs; [
         diffutils
@@ -86,7 +99,6 @@ in
         # hm-mutable-diff is a home manager tool, assume home-manager is in $PATH
       ];
       text = builtins.readFile ./hm-mutable-diff.sh;
-    })
-  ];
-
+    }
+  );
 }
