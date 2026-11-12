@@ -34,8 +34,11 @@ if [ "${1:-}" == "--base-flake" ]; then
 		fi
 		readlink -e result/
 	)
+	# FIXME: what if flake sets xdg.configHome?
+	MUTABLE_FILES="$base"/home-files/.config/hm-mutable-files/files
 elif [ -z "${1:-}" ]; then
 	base=$(readlink -m "$S"/nix/profiles/home-manager)
+	MUTABLE_FILES="$C"/hm-mutable-files/files
 else
 	echo "ERROR: unexpected argument: $1" >&2
 	usage
@@ -47,6 +50,6 @@ while IFS= read -r file; do
 	if ! diff -Nu "$base/home-files/$file" "$HOME/$file"; then
 		mutated=1
 	fi
-done <"$C"/hm-mutable-files/files
+done <"$MUTABLE_FILES"
 
 exit $mutated
