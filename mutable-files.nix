@@ -6,11 +6,13 @@
   ...
 }:
 let
-  fileOptionAttrPaths = [
-    [
-      "home"
-      "file"
-    ]
+
+  fileDefinitionPath = [
+    "home"
+    "file"
+  ];
+  augmentedOptionPaths = [
+    fileDefinitionPath
     [
       "xdg"
       "configFile"
@@ -21,9 +23,7 @@ let
     ]
   ];
 
-  allFiles = builtins.concatLists (
-    map (attrPath: builtins.attrValues (lib.getAttrFromPath attrPath config)) fileOptionAttrPaths
-  );
+  allFiles = builtins.attrValues (lib.getAttrFromPath fileDefinitionPath config);
   mutableFiles = builtins.filter (file: file.mutable or false) allFiles;
 in
 {
@@ -46,10 +46,10 @@ in
           };
         }
       );
-      mutatedOptionAugmented = mergeAttrsList (
+      augmentedWithOption = mergeAttrsList (
         map (
           attrPath: lib.setAttrByPath attrPath (lib.mkOption { type = fileAttrsType; })
-        ) fileOptionAttrPaths
+        ) augmentedOptionPaths
       );
     in
     {
@@ -61,7 +61,7 @@ in
       };
     }
     # Add `mutated` option to home file submodules
-    // mutatedOptionAugmented;
+    // augmentedWithOption;
 
   # An activation script that replaces nix-store links with mutable files
   config.home.activation.mutableFileGeneration =
@@ -85,7 +85,7 @@ in
 
   # A list of mutable files
   config.xdg.configFile."hm-mutable-files/files".text = lib.concatLines (
-    lib.unique (map (f: f.target) mutableFiles)
+    map (f: f.target) mutableFiles
   );
 
   # A diff tool that shows what has been mutated
