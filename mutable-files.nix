@@ -37,9 +37,8 @@ in
             default = false;
             description = ''
               Whether to copy the file without the read-only attribute instead of
-              symlinking. If you set this to `true`, you must also set `force` to
-              `true`. Mutable files are not removed when you remove them from your
-              configuration.
+              symlinking. Mutable files are not removed when you remove them from
+              your configuration.
 
               This option is useful for programs that don't have a very good
               support for read-only configurations.
