@@ -1,5 +1,10 @@
 # This module extends home.file, xdg.configFile and xdg.dataFile with the `mutable` option.
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   fileOptionAttrPaths = [
     [
@@ -67,7 +72,21 @@ in
       + lib.concatLines (map toCommand mutableFiles);
     in
     lib.hm.dag.entryAfter [ "linkGeneration" ] command;
+
   config.xdg.configFile."hm-mutable-files/files".text = lib.concatLines (
     lib.unique (map (f: f.target) mutableFiles)
   );
+
+  config.home.packages = [
+    (pkgs.writeShellApplication {
+      name = "hm-mutable-diff";
+      runtimeInputs = with pkgs; [
+        diffutils
+        coreutils
+        # hm-mutable-diff is a home manager tool, assume home-manager is in $PATH
+      ];
+      text = builtins.readFile ./hm-mutable-diff.sh;
+    })
+  ];
+
 }

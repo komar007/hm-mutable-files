@@ -1,5 +1,6 @@
 {
   inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     systems.url = "github:nix-systems/default";
   };
@@ -9,9 +10,9 @@
       { ... }:
       {
         systems = import inputs.systems;
-        flake = rec {
-          homeManagerModules.mutable-files = import ./mutable-files.nix;
-          homeManagerModules.default = homeManagerModules.mutable-files;
+        flake.homeManagerModules = rec {
+          mutable-files = import ./mutable-files.nix;
+          default = mutable-files;
         };
       }
     );
